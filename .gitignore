@@ -1,0 +1,22 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.idea/caches/
+
+# Android
+local.properties
+*.hprof
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Planning docs
+ARCHITECTURE.md
+README.md
+ROADMAP.md
