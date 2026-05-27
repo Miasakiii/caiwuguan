@@ -1,7 +1,9 @@
 package com.caiwuguan.ui.stats
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,8 +26,12 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -43,6 +49,7 @@ import com.caiwuguan.R
 import com.caiwuguan.ui.common.AmountText
 import com.caiwuguan.domain.model.BillType
 import com.caiwuguan.domain.model.Category
+import com.caiwuguan.ui.common.CategoryColors
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -129,7 +136,7 @@ fun StatsScreen(
             }
         }
 
-        // 分类饼图
+        // 分类环形图
         if (categoryStats.isNotEmpty()) {
             item {
                 Card(modifier = Modifier.fillMaxWidth()) {
@@ -137,28 +144,58 @@ fun StatsScreen(
                         Text(stringResource(R.string.category_distribution), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                         Spacer(Modifier.height(8.dp))
 
-                        // 饼图
-                        Canvas(modifier = Modifier.fillMaxWidth().height(200.dp)) {
-                            val strokeWidth = size.minDimension * 0.35f
-                            val radius = size.minDimension * 0.35f
-                            val total = categoryStats.sumOf { it.total }.toFloat()
-                            if (total <= 0f) return@Canvas
+                        // 环形图 - 带入场动画
+                        Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
+                            val totalAmount = categoryStats.sumOf { it.total }
 
-                            var startAngle = -90f
-                            val center = Offset(size.width / 2f, size.height / 2f)
+                            // 动画进度
+                            var animationPlayed by remember { mutableStateOf(false) }
+                            val animatedProgress by animateFloatAsState(
+                                targetValue = if (animationPlayed) 1f else 0f,
+                                animationSpec = androidx.compose.animation.core.tween(
+                                    durationMillis = 1000,
+                                    easing = androidx.compose.animation.core.FastOutSlowInEasing
+                                ),
+                                label = "chart_animation"
+                            )
 
-                            categoryStats.forEach { stat ->
-                                val sweepAngle = (stat.total / total) * 360f
-                                val color = categoryColors[stat.category] ?: Color.Gray
-                                drawArc(
-                                    color = color,
-                                    startAngle = startAngle,
-                                    sweepAngle = sweepAngle,
-                                    useCenter = true,
-                                    topLeft = Offset(center.x - radius, center.y - radius),
-                                    size = Size(radius * 2, radius * 2)
+                            LaunchedEffect(categoryStats) {
+                                animationPlayed = true
+                            }
+
+                            Canvas(modifier = Modifier.size(180.dp)) {
+                                val strokeWidth = 40f
+                                val radius = (size.minDimension - strokeWidth) / 2
+                                val total = totalAmount.toFloat()
+                                if (total <= 0f) return@Canvas
+
+                                var startAngle = -90f
+                                val center = Offset(size.width / 2f, size.height / 2f)
+
+                                categoryStats.forEachIndexed { index, stat ->
+                                    val sweepAngle = (stat.total.toFloat() / total) * 360f * animatedProgress
+                                    val color = CategoryColors.getForeground(stat.category)
+                                    drawArc(
+                                        color = color,
+                                        startAngle = startAngle,
+                                        sweepAngle = sweepAngle,
+                                        useCenter = false,
+                                        topLeft = Offset(center.x - radius, center.y - radius),
+                                        size = Size(radius * 2, radius * 2),
+                                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = strokeWidth)
+                                    )
+                                    startAngle += sweepAngle
+                                }
+                            }
+
+                            // 中心显示总额
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    "总支出",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                                startAngle += sweepAngle
+                                AmountText(totalAmount, BillType.EXPENSE)
                             }
                         }
                     }
@@ -169,7 +206,7 @@ fun StatsScreen(
             items(categoryStats) { stat ->
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    colors = CardDefaults.cardColors(containerColor = CategoryColors.getBackground(stat.category))
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
@@ -182,7 +219,7 @@ fun StatsScreen(
                             LinearProgressIndicator(
                                 progress = { stat.percentage },
                                 modifier = Modifier.fillMaxWidth().height(4.dp).padding(top = 2.dp),
-                                color = categoryColors[stat.category] ?: Color.Gray,
+                                color = CategoryColors.getForeground(stat.category),
                                 trackColor = Color.LightGray
                             )
                         }

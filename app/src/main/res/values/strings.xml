@@ -52,4 +52,16 @@
 
     <!-- 通用 -->
     <string name="yuan_format">%.2f 元</string>
+
+    <!-- 预算 -->
+    <string name="budget_title">预算管理</string>
+    <string name="budget_empty">暂无预算</string>
+    <string name="budget_empty_hint">点击右下角按钮添加分类预算</string>
+    <string name="budget_add">添加预算</string>
+    <string name="budget_edit">编辑预算</string>
+    <string name="budget_amount">预算金额 (元)</string>
+    <string name="budget_used">已用</string>
+    <string name="budget_over">超支</string>
+    <string name="budget_save">保存</string>
+    <string name="budget_delete_confirm">确定要删除此预算吗？</string>
 </resources>

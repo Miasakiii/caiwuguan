@@ -17,7 +17,7 @@ class AiHelper @Inject constructor(
     /**
      * 根据账单历史生成个性化分类建议
      */
-    fun suggestCategory(merchant: String, history: List<Bill>): com.caiwuguan.domain.model.Category {
+    fun suggestCategory(merchant: String, history: List<Bill> = emptyList()): com.caiwuguan.domain.model.Category {
         // 当前使用规则匹配，后续可接入 AI
         return categoryClassifier.classify(merchant).first
     }

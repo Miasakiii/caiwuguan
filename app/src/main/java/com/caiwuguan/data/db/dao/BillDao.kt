@@ -7,12 +7,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.caiwuguan.data.db.entity.BillEntity
+import com.caiwuguan.domain.model.CategoryAmount
 import kotlinx.coroutines.flow.Flow
-
-data class CategoryAmount(
-    val category: String,
-    val total: Long
-)
 
 @Dao
 interface BillDao {
@@ -71,4 +67,14 @@ interface BillDao {
         "ORDER BY timestamp DESC"
     )
     fun search(keyword: String): Flow<List<BillEntity>>
+
+    @Query(
+        "SELECT * FROM bills " +
+        "WHERE amount = :amount AND merchant = :merchant " +
+        "AND timestamp BETWEEN :timeStart AND :timeEnd LIMIT 1"
+    )
+    suspend fun findLooseDuplicate(
+        amount: Long, merchant: String,
+        timeStart: Long, timeEnd: Long
+    ): BillEntity?
 }

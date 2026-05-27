@@ -22,7 +22,7 @@ fun CategoryIcon(category: Category, size: Dp = 40.dp) {
         modifier = Modifier
             .size(size)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primaryContainer),
+            .background(CategoryColors.getBackground(category)),
         contentAlignment = Alignment.Center
     ) {
         androidx.compose.material3.Text(

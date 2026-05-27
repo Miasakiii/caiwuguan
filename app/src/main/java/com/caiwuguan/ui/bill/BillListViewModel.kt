@@ -26,6 +26,9 @@ class BillListViewModel @Inject constructor(
     private val _currentMonth = MutableStateFlow(Calendar.getInstance().get(Calendar.MONTH) + 1)
     val currentMonth: StateFlow<Int> = _currentMonth.asStateFlow()
 
+    private val _lastDeletedBill = MutableStateFlow<Bill?>(null)
+    val lastDeletedBill: StateFlow<Bill?> = _lastDeletedBill.asStateFlow()
+
     init {
         loadMonth()
     }
@@ -46,8 +49,22 @@ class BillListViewModel @Inject constructor(
 
     fun deleteBill(bill: Bill) {
         viewModelScope.launch {
+            _lastDeletedBill.value = bill
             repository.deleteBill(bill)
         }
+    }
+
+    fun undoDelete() {
+        viewModelScope.launch {
+            _lastDeletedBill.value?.let { bill ->
+                repository.insertBill(bill)
+                _lastDeletedBill.value = null
+            }
+        }
+    }
+
+    fun clearLastDeleted() {
+        _lastDeletedBill.value = null
     }
 
     private fun loadMonth() {

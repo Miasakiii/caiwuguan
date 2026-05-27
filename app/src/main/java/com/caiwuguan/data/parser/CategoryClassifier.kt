@@ -15,7 +15,7 @@ class CategoryClassifier @Inject constructor() {
         ),
         Category.TRANSPORT to listOf(
             "滴滴", "高德", "地铁", "公交", "出租", "加油",
-            "停车", "高速", "铁路", "航空"
+            "停车", "高速", "铁路", "航空", "12306", "携程"
         ),
         Category.SHOPPING to listOf(
             "淘宝", "京东", "拼多多", "天猫", "超市", "便利店", "商场"

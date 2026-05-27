@@ -36,9 +36,10 @@ class Deduplicator @Inject constructor(
         // 宽松匹配（同一天，跨来源）
         val dayStart = bill.timestamp - (bill.timestamp % (24 * 60 * 60 * 1000L))
         val dayEnd = dayStart + 24 * 60 * 60 * 1000L
-        // 注：BillDao 暂不支持 findLooseDuplicate，后续可添加
-        // val loose = billDao.findLooseDuplicate(bill.amount, bill.merchant, dayStart, dayEnd)
-        // if (loose != null) return DuplicateCheckResult.Duplicate(DuplicateCheckResult.MatchType.LOOSE, loose.id)
+        val loose = billDao.findLooseDuplicate(bill.amount, bill.merchant, dayStart, dayEnd)
+        if (loose != null) return DuplicateCheckResult.Duplicate(
+            DuplicateCheckResult.MatchType.LOOSE, loose.id
+        )
 
         return DuplicateCheckResult.Unique("未发现重复交易")
     }

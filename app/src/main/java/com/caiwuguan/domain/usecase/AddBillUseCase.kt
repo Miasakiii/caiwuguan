@@ -44,9 +44,10 @@ class AddBillUseCase @Inject constructor(
             if (existing != null) {
                 Category.valueOf(existing)
             } else {
-                // 使用分类器 + AI 双重确认
-                val (cat, _) = categoryClassifier.classify(merchant)
-                // TODO: 异步保存 MerchantCategory
+                val cat = aiHelper.suggestCategory(merchant)
+                merchantCategoryRepository.insert(
+                    MerchantCategory(merchant = merchant, category = cat)
+                )
                 cat
             }
         } else {

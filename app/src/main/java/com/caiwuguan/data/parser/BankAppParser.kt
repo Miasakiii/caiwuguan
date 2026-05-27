@@ -29,16 +29,8 @@ class BankAppParser @Inject constructor() : NotificationParser {
         val amount = AmountExtractor.extractAmount(text) ?: return ParseResult.Failure("无法提取金额")
 
         return when {
-            text.contains("工资") || text.contains("入账") && !text.contains("消费") -> ParseResult.Success(
+            (text.contains("工资") || text.contains("入账")) && !text.contains("消费") -> ParseResult.Success(
                 amount, BillType.INCOME, category = Category.SALARY, source = source
-            )
-
-            text.contains("消费") || text.contains("支出") || text.contains("付款") || text.contains("扣款") -> ParseResult.Success(
-                amount, BillType.EXPENSE, source = source
-            )
-
-            text.contains("退款") -> ParseResult.Success(
-                amount, BillType.INCOME, source = source
             )
 
             text.contains("转账") -> {
@@ -47,6 +39,14 @@ class BankAppParser @Inject constructor() : NotificationParser {
                     amount, type, category = Category.TRANSFER, source = source
                 )
             }
+
+            text.contains("退款") -> ParseResult.Success(
+                amount, BillType.INCOME, source = source
+            )
+
+            text.contains("消费") || text.contains("支出") || text.contains("付款") || text.contains("扣款") -> ParseResult.Success(
+                amount, BillType.EXPENSE, source = source
+            )
 
             text.contains("收入") || text.contains("存入") -> ParseResult.Success(
                 amount, BillType.INCOME, source = source

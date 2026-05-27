@@ -11,7 +11,13 @@ import androidx.navigation.navArgument
 import com.caiwuguan.ui.bill.AddBillScreen
 import com.caiwuguan.ui.bill.BillEditScreen
 import com.caiwuguan.ui.bill.BillListScreen
+import com.caiwuguan.ui.budget.BudgetScreen
+import com.caiwuguan.ui.export.ExportScreen
 import com.caiwuguan.ui.home.HomeScreen
+import com.caiwuguan.ui.dataimport.ImportScreen
+import com.caiwuguan.ui.ledger.LedgerScreen
+import com.caiwuguan.ui.search.SearchScreen
+import com.caiwuguan.ui.settings.ApiKeyScreen
 import com.caiwuguan.ui.settings.SettingsScreen
 import com.caiwuguan.ui.stats.StatsScreen
 
@@ -39,6 +45,24 @@ fun AppNavigation(navController: NavHostController, bottomPadding: Dp = 0.dp) {
         }
         composable(NavRoutes.SETTINGS) {
             SettingsScreen(navController, bottomPadding)
+        }
+        composable(NavRoutes.BUDGET) {
+            BudgetScreen(bottomPadding)
+        }
+        composable(NavRoutes.IMPORT) {
+            ImportScreen(navController)
+        }
+        composable(NavRoutes.EXPORT) {
+            ExportScreen(navController)
+        }
+        composable(NavRoutes.SEARCH) {
+            SearchScreen(navController)
+        }
+        composable(NavRoutes.LEDGER) {
+            LedgerScreen(navController)
+        }
+        composable(NavRoutes.API_KEY) {
+            ApiKeyScreen(navController)
         }
     }
 }

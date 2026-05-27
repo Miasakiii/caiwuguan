@@ -11,7 +11,6 @@ import android.util.Log
 import com.caiwuguan.BuildConfig
 import com.caiwuguan.data.parser.ParseResult
 import com.caiwuguan.data.parser.ParserRegistry
-import com.caiwuguan.domain.repository.BillRepository
 import com.caiwuguan.domain.usecase.AddBillUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -30,7 +29,6 @@ class NotificationListenerServiceImpl : NotificationListenerService() {
     }
 
     @Inject lateinit var parserRegistry: ParserRegistry
-    @Inject lateinit var billRepository: BillRepository
     @Inject lateinit var addBillUseCase: AddBillUseCase
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

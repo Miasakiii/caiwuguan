@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -36,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.caiwuguan.R
+import com.caiwuguan.ui.navigation.NavRoutes
+import com.caiwuguan.util.PhoneManufacturer
 
 @Composable
 fun SettingsScreen(
@@ -97,6 +100,120 @@ fun SettingsScreen(
                     viewModel.requestIgnoreBatteryOptimization {}
                 }) {
                     Text(stringResource(R.string.go_to_settings))
+                }
+            }
+        }
+
+        // 厂商保活适配
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("厂商保活设置", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "不同手机厂商对后台应用有不同的限制，请根据您的手机品牌进行设置",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    PhoneManufacturer.getAutoStartGuide(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        // 预算管理
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("预算管理", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "设置每月各分类的预算上限，帮助控制消费",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(8.dp))
+                TextButton(onClick = {
+                    navController.navigate(NavRoutes.BUDGET)
+                }) {
+                    Text("进入预算管理")
+                }
+            }
+        }
+
+        // 导入账单
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("导入账单", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "从微信或支付宝导入历史账单记录",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(8.dp))
+                TextButton(onClick = {
+                    navController.navigate(NavRoutes.IMPORT)
+                }) {
+                    Text("导入账单")
+                }
+            }
+        }
+
+        // 导出账单
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("导出账单", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "将账单数据导出为 CSV 文件，方便备份或分析",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(8.dp))
+                TextButton(onClick = {
+                    navController.navigate(NavRoutes.EXPORT)
+                }) {
+                    Text("导出账单")
+                }
+            }
+        }
+
+        // 账本管理
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("账本管理", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "管理多个账本，分类记录不同场景的收支",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(8.dp))
+                TextButton(onClick = {
+                    navController.navigate(NavRoutes.LEDGER)
+                }) {
+                    Text("管理账本")
+                }
+            }
+        }
+
+        // AI 设置
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("AI 智能记账", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "配置 DeepSeek API Key，使用自然语言快速记账",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(8.dp))
+                TextButton(onClick = {
+                    navController.navigate(NavRoutes.API_KEY)
+                }) {
+                    Text("设置 API Key")
                 }
             }
         }

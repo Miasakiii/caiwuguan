@@ -1,6 +1,7 @@
 package com.caiwuguan.ui.bill
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,20 +16,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +50,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.caiwuguan.R
@@ -53,7 +64,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun BillListScreen(
     navController: NavHostController,
@@ -63,7 +74,26 @@ fun BillListScreen(
     val bills by viewModel.bills.collectAsState()
     val year by viewModel.currentYear.collectAsState()
     val month by viewModel.currentMonth.collectAsState()
+    val lastDeletedBill by viewModel.lastDeletedBill.collectAsState()
     var billToDelete by remember { mutableStateOf<Bill?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val hapticFeedback = LocalHapticFeedback.current
+
+    // 监听删除事件，显示 Snackbar
+    LaunchedEffect(lastDeletedBill) {
+        lastDeletedBill?.let { bill ->
+            val result = snackbarHostState.showSnackbar(
+                message = "已删除账单",
+                actionLabel = "撤销",
+                duration = SnackbarDuration.Short
+            )
+            if (result == androidx.compose.material3.SnackbarResult.ActionPerformed) {
+                viewModel.undoDelete()
+            } else {
+                viewModel.clearLastDeleted()
+            }
+        }
+    }
 
     // 删除确认对话框
     billToDelete?.let { bill ->
@@ -73,6 +103,7 @@ fun BillListScreen(
             text = { Text(stringResource(R.string.confirm_delete_message)) },
             confirmButton = {
                 TextButton(onClick = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                     viewModel.deleteBill(bill)
                     billToDelete = null
                 }) {
@@ -87,86 +118,105 @@ fun BillListScreen(
         )
     }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .padding(bottom = bottomPadding),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        // 月份切换
-        item {
-            Spacer(Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { viewModel.previousMonth() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.previous_month))
-                }
-                Text(
-                    text = "${year}年${month}月",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                IconButton(onClick = { viewModel.nextMonth() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = stringResource(R.string.next_month))
-                }
-            }
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         }
-
-        if (bills.isEmpty()) {
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .padding(innerPadding)
+                .padding(bottom = bottomPadding),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            // 月份切换
             item {
-                EmptyState(message = stringResource(R.string.empty_month_bills))
-            }
-        } else {
-            // 按日期分组
-            val groupedBills = bills.groupBy { bill ->
-                val sdf = SimpleDateFormat("yyyy年MM月dd日 EE", Locale.CHINESE)
-                sdf.format(Date(bill.timestamp))
-            }
-
-            groupedBills.forEach { (date, dateBills) ->
-                item {
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { viewModel.previousMonth() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.previous_month))
+                    }
                     Text(
-                        text = date,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        text = "${year}年${month}月",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
                     )
-                }
-                items(dateBills, key = { it.id }) { bill ->
-                    val dismissState = rememberSwipeToDismissBoxState(
-                        confirmValueChange = { value ->
-                            if (value == SwipeToDismissBoxValue.EndToStart) {
-                                billToDelete = bill
-                                false // 不直接删除，显示确认对话框
-                            } else false
+                    Row {
+                        IconButton(onClick = { navController.navigate(NavRoutes.SEARCH) }) {
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = "搜索",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
                         }
-                    )
-                    SwipeToDismissBox(
-                        state = dismissState,
-                        backgroundContent = {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.Red)
-                                    .padding(horizontal = 20.dp),
-                                contentAlignment = Alignment.CenterEnd
-                            ) {
-                                Text("删除", color = Color.White, fontWeight = FontWeight.Bold)
-                            }
+                        IconButton(onClick = { viewModel.nextMonth() }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = stringResource(R.string.next_month))
                         }
-                    ) {
-                        BillCard(bill = bill, onClick = {
-                            navController.navigate(NavRoutes.editBill(bill.id))
-                        })
                     }
                 }
             }
-        }
 
-        item { Spacer(Modifier.height(8.dp)) }
+            if (bills.isEmpty()) {
+                item {
+                    EmptyState(message = stringResource(R.string.empty_month_bills))
+                }
+            } else {
+                // 按日期分组
+                val groupedBills = bills.groupBy { bill ->
+                    val sdf = SimpleDateFormat("yyyy年MM月dd日 EE", Locale.CHINESE)
+                    sdf.format(Date(bill.timestamp))
+                }
+
+                groupedBills.forEach { (date, dateBills) ->
+                    stickyHeader {
+                        Text(
+                            text = date,
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.surface)
+                                .padding(vertical = 8.dp)
+                        )
+                    }
+                    items(dateBills, key = { it.id }) { bill ->
+                        val dismissState = rememberSwipeToDismissBoxState(
+                            confirmValueChange = { value ->
+                                if (value == SwipeToDismissBoxValue.EndToStart) {
+                                    billToDelete = bill
+                                    false // 不直接删除，显示确认对话框
+                                } else false
+                            }
+                        )
+                        SwipeToDismissBox(
+                            state = dismissState,
+                            backgroundContent = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.Red)
+                                        .padding(horizontal = 20.dp),
+                                    contentAlignment = Alignment.CenterEnd
+                                ) {
+                                    Text("删除", color = Color.White, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        ) {
+                            BillCard(bill = bill, onClick = {
+                                navController.navigate(NavRoutes.editBill(bill.id))
+                            })
+                        }
+                    }
+                }
+            }
+
+            item { Spacer(Modifier.height(8.dp)) }
+        }
     }
 }
