@@ -345,7 +345,7 @@
 | M1 | 商户分类历史不落地 | AddBillUseCase.kt:50-51 | 实现 merchantCategoryRepository.saveOrUpdate() |
 | M2 | 第三级去重被注释 | Deduplicator.kt:36-41 | 取消注释 + 添加 BillDao.findLooseDuplicate |
 | M3 | BankAppParser 优先级 Bug | BankAppParser.kt:32 | `(A \|\| B) && !C` 加括号 |
-| M4 | AlipayParser 单字"付"误伤 | AlipayParser.kt:41 | 改为"付款" |
+| M4 | AlipayParser 单字"付"误伤 | AlipayParser.kt | ✅ 已修复：移除单字"付"匹配 |
 | M5 | CategoryAmount 暴露在 DAO 文件 | BillDao.kt:12-15 | 移到独立 model |
 | M6 | Converters Map 序列化器未使用 | Converters.kt:33-37 | 删除或修复 |
 | M7 | AiHelper 未参与分类决策 | AddBillUseCase.kt | 集成 suggestCategory() |
@@ -356,20 +356,20 @@
 
 ### 🔵 技术债务
 
-| # | 问题 | 解决方向 |
-|---|------|----------|
-| m1 | 零测试覆盖 | 至少补充 DAO/Parser/Deduplicator 单测 |
-| m2 | destructive migration | 发布前写 Migration(2, 3) |
-| m3 | 删除按钮无确认对话框 | 添加 AlertDialog |
-| m4 | 硬编码中文字符串 | 提取 strings.xml |
-| m5 | BootReceiver 缺 Android 14+ 导出声明 | Manifest 加 exported |
-| m6 | transactionId 查询缺联合索引 | BillEntity 添加 Index(["source","transactionId"]) |
-| m7 | Gson 实例未复用 | Converters companion object |
-| m8 | 金额提取正则 3 处重复 | 提取 AmountExtractor 工具类 |
-| m9 | foregroundServiceType 未声明 | Manifest 添加 specialUse |
-| m10 | PermissionManager context as Activity 永远 null | ✅ 已修复：移除 Activity 字段，改用 context.startActivity() |
-| m11 | AiHelper 返回 Markdown 无渲染 | 添加 Markdown Composable |
-| m12 | DAO Provider 未标记 @Singleton | AppModule 添加注解 |
+| # | 问题 | 状态 | 解决方式 |
+|---|------|------|----------|
+| m1 | 零测试覆盖 | ❌ 待修复 | 至少补充 DAO/Parser/Deduplicator 单测 |
+| m2 | destructive migration | ❌ 待修复 | 发布前写 Migration(2, 3) |
+| m3 | 删除按钮无确认对话框 | ✅ 已修复 | 添加 AlertDialog 确认 |
+| m4 | 硬编码中文字符串 | ❌ 待修复 | 提取 strings.xml |
+| m5 | BootReceiver 缺导出声明 | ✅ 已修复 | Manifest exported=true |
+| m6 | transactionId 查询缺联合索引 | ✅ 已修复 | 添加 Index(["source","transactionId"]) |
+| m7 | Gson 实例未复用 | ✅ 已修复 | Converters companion object |
+| m8 | 金额提取正则 3 处重复 | ✅ 已修复 | 提取 AmountExtractor 工具类 |
+| m9 | foregroundServiceType 未声明 | ✅ 已修复 | Manifest 已有 specialUse |
+| m10 | PermissionManager context as Activity | ✅ 已修复 | 移除 Activity 字段，改用 context.startActivity() |
+| m11 | AiHelper 返回 Markdown 无渲染 | ❌ 待修复 | 添加 Markdown Composable |
+| m12 | DAO Provider 未标记 @Singleton | ✅ 已修复 | AppModule 添加注解 |
 
 ---
 
