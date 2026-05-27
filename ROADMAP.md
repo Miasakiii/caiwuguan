@@ -359,16 +359,16 @@
 | # | 问题 | 状态 | 解决方式 |
 |---|------|------|----------|
 | m1 | 零测试覆盖 | ❌ 待修复 | 至少补充 DAO/Parser/Deduplicator 单测 |
-| m2 | destructive migration | ❌ 待修复 | 发布前写 Migration(2, 3) |
+| m2 | destructive migration | ✅ 已修复 | 添加 Migration(2,3) |
 | m3 | 删除按钮无确认对话框 | ✅ 已修复 | 添加 AlertDialog 确认 |
-| m4 | 硬编码中文字符串 | ❌ 待修复 | 提取 strings.xml |
+| m4 | 硬编码中文字符串 | ✅ 已修复 | 提取 40+ 字符串到 strings.xml |
 | m5 | BootReceiver 缺导出声明 | ✅ 已修复 | Manifest exported=true |
 | m6 | transactionId 查询缺联合索引 | ✅ 已修复 | 添加 Index(["source","transactionId"]) |
 | m7 | Gson 实例未复用 | ✅ 已修复 | Converters companion object |
 | m8 | 金额提取正则 3 处重复 | ✅ 已修复 | 提取 AmountExtractor 工具类 |
 | m9 | foregroundServiceType 未声明 | ✅ 已修复 | Manifest 已有 specialUse |
 | m10 | PermissionManager context as Activity | ✅ 已修复 | 移除 Activity 字段，改用 context.startActivity() |
-| m11 | AiHelper 返回 Markdown 无渲染 | ❌ 待修复 | 添加 Markdown Composable |
+| m11 | AiHelper 返回 Markdown 无渲染 | ✅ 已修复 | 添加 MarkdownText Composable |
 | m12 | DAO Provider 未标记 @Singleton | ✅ 已修复 | AppModule 添加注解 |
 
 ---
