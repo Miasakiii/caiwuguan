@@ -21,10 +21,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.caiwuguan.R
 import com.caiwuguan.domain.model.Bill
 import com.caiwuguan.ui.common.AmountText
 import com.caiwuguan.ui.common.BillCard
@@ -73,18 +75,18 @@ fun HomeScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("今日", style = MaterialTheme.typography.titleSmall)
+                    Text(stringResource(R.string.today), style = MaterialTheme.typography.titleSmall)
                     Spacer(Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("支出", style = MaterialTheme.typography.labelMedium)
+                            Text(stringResource(R.string.expense), style = MaterialTheme.typography.labelMedium)
                             AmountText(todayExpense, com.caiwuguan.domain.model.BillType.EXPENSE)
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("收入", style = MaterialTheme.typography.labelMedium)
+                            Text(stringResource(R.string.income), style = MaterialTheme.typography.labelMedium)
                             AmountText(todayIncome, com.caiwuguan.domain.model.BillType.INCOME)
                         }
                     }
@@ -99,18 +101,18 @@ fun HomeScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("本月", style = MaterialTheme.typography.titleSmall)
+                    Text(stringResource(R.string.this_month), style = MaterialTheme.typography.titleSmall)
                     Spacer(Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("支出", style = MaterialTheme.typography.labelMedium)
+                            Text(stringResource(R.string.expense), style = MaterialTheme.typography.labelMedium)
                             AmountText(monthExpense, com.caiwuguan.domain.model.BillType.EXPENSE)
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("收入", style = MaterialTheme.typography.labelMedium)
+                            Text(stringResource(R.string.income), style = MaterialTheme.typography.labelMedium)
                             AmountText(monthIncome, com.caiwuguan.domain.model.BillType.INCOME)
                         }
                     }
@@ -121,7 +123,7 @@ fun HomeScreen(
         // 最近账单标题
         item {
             Text(
-                "最近账单",
+                stringResource(R.string.recent_bills),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
@@ -130,7 +132,7 @@ fun HomeScreen(
         // 最近账单列表
         if (recentBills.isEmpty()) {
             item {
-                EmptyState(message = "还没有账单记录，点击右下角 + 添加第一笔吧")
+                EmptyState(message = stringResource(R.string.empty_bills))
             }
         } else {
             items(recentBills) { bill ->

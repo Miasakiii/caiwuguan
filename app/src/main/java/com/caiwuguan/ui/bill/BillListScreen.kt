@@ -38,10 +38,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.caiwuguan.R
 import com.caiwuguan.domain.model.Bill
 import com.caiwuguan.ui.common.AmountText
 import com.caiwuguan.ui.common.BillCard
@@ -67,19 +69,19 @@ fun BillListScreen(
     billToDelete?.let { bill ->
         AlertDialog(
             onDismissRequest = { billToDelete = null },
-            title = { Text("确认删除") },
-            text = { Text("确定要删除这笔账单吗？") },
+            title = { Text(stringResource(R.string.confirm_delete)) },
+            text = { Text(stringResource(R.string.confirm_delete_message)) },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.deleteBill(bill)
                     billToDelete = null
                 }) {
-                    Text("删除")
+                    Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { billToDelete = null }) {
-                    Text("取消")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -101,7 +103,7 @@ fun BillListScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { viewModel.previousMonth() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "上个月")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.previous_month))
                 }
                 Text(
                     text = "${year}年${month}月",
@@ -109,14 +111,14 @@ fun BillListScreen(
                     fontWeight = FontWeight.Bold
                 )
                 IconButton(onClick = { viewModel.nextMonth() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "下个月")
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = stringResource(R.string.next_month))
                 }
             }
         }
 
         if (bills.isEmpty()) {
             item {
-                EmptyState(message = "该月没有账单记录")
+                EmptyState(message = stringResource(R.string.empty_month_bills))
             }
         } else {
             // 按日期分组

@@ -1,4 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">财务官</string>
+
+    <!-- 底部导航 -->
+    <string name="nav_home">首页</string>
+    <string name="nav_bills">账单</string>
+    <string name="nav_stats">统计</string>
+    <string name="nav_settings">设置</string>
+    <string name="fab_add_bill">记账</string>
+
+    <!-- 首页 -->
+    <string name="today">今日</string>
+    <string name="this_month">本月</string>
+    <string name="expense">支出</string>
+    <string name="income">收入</string>
+    <string name="recent_bills">最近账单</string>
+    <string name="empty_bills">还没有账单记录，点击右下角 + 添加第一笔吧</string>
+
+    <!-- 账单列表 -->
+    <string name="empty_month_bills">该月没有账单记录</string>
+    <string name="delete">删除</string>
+    <string name="confirm_delete">确认删除</string>
+    <string name="confirm_delete_message">确定要删除这笔账单吗？</string>
+    <string name="cancel">取消</string>
+    <string name="previous_month">上个月</string>
+    <string name="next_month">下个月</string>
+
+    <!-- 统计 -->
+    <string name="balance">结余</string>
+    <string name="category_distribution">分类分布</string>
+    <string name="daily_trend">每日趋势</string>
+    <string name="no_expense_data">暂无支出数据</string>
+
+    <!-- 设置 -->
+    <string name="settings_title">设置</string>
+    <string name="notification_permission">通知监听权限</string>
+    <string name="notification_permission_desc">财务官需要通知监听权限来读取微信和支付宝的支付通知，实现自动记账。</string>
+    <string name="go_to_settings">前往设置</string>
+    <string name="enabled">已开启</string>
+    <string name="battery_optimization">电池优化</string>
+    <string name="battery_optimization_desc">关闭电池优化以确保后台服务不被系统杀死，保证自动记账持续运行。</string>
+    <string name="background_service">后台服务</string>
+    <string name="background_service_desc">财务官会在通知栏常驻显示今日消费，确保 App 不被系统杀死。特殊用途声明：记账与统计服务（FINANCE_TRACKING）。建议将 App 加入「自启动」和「受保护应用」列表。</string>
+    <string name="about">关于</string>
+    <string name="app_name_label">应用名称</string>
+    <string name="version">版本</string>
+    <string name="tech_stack">技术栈</string>
+    <string name="tech_stack_value">Kotlin 2.0 + Compose + Room + Hilt</string>
+    <string name="data_storage">数据存储</string>
+    <string name="data_storage_value">纯本地 Room 数据库，不上传云端</string>
+
+    <!-- 通用 -->
+    <string name="yuan_format">%.2f 元</string>
 </resources>

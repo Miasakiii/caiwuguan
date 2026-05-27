@@ -29,12 +29,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.caiwuguan.R
 
 @Composable
 fun SettingsScreen(
@@ -55,20 +56,20 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Spacer(Modifier.height(8.dp))
-        Text("设置", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(4.dp))
 
         // 权限设置
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("通知监听权限", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.notification_permission), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                     Spacer(Modifier.weight(1f))
                     PermissionStatusIcon(isNotificationListenerEnabled)
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "财务官需要通知监听权限来读取微信和支付宝的支付通知，实现自动记账。",
+                    stringResource(R.string.notification_permission_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -76,7 +77,7 @@ fun SettingsScreen(
                 TextButton(onClick = {
                     viewModel.openNotificationListenerSettings()
                 }) {
-                    Text(if (isNotificationListenerEnabled) "已开启" else "前往设置")
+                    Text(if (isNotificationListenerEnabled) stringResource(R.string.enabled) else stringResource(R.string.go_to_settings))
                 }
             }
         }
@@ -84,10 +85,10 @@ fun SettingsScreen(
         // 电池优化
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("电池优化", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.battery_optimization), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "关闭电池优化以确保后台服务不被系统杀死，保证自动记账持续运行。",
+                    stringResource(R.string.battery_optimization_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -95,7 +96,7 @@ fun SettingsScreen(
                 TextButton(onClick = {
                     viewModel.requestIgnoreBatteryOptimization {}
                 }) {
-                    Text("前往设置")
+                    Text(stringResource(R.string.go_to_settings))
                 }
             }
         }
@@ -103,12 +104,10 @@ fun SettingsScreen(
         // 前台服务
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("后台服务", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.background_service), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "财务官会在通知栏常驻显示今日消费，确保 App 不被系统杀死。" +
-                    "特殊用途声明：记账与统计服务（FINANCE_TRACKING）。" +
-                    "建议将 App 加入「自启动」和「受保护应用」列表。",
+                    stringResource(R.string.background_service_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -118,12 +117,12 @@ fun SettingsScreen(
         // 关于
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("关于", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.about), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.height(8.dp))
-                InfoRow("应用名称", "财务官")
-                InfoRow("版本", "1.0.0")
-                InfoRow("技术栈", "Kotlin 2.0 + Compose + Room + Hilt")
-                InfoRow("数据存储", "纯本地 Room 数据库，不上传云端")
+                InfoRow(stringResource(R.string.app_name_label), stringResource(R.string.app_name))
+                InfoRow(stringResource(R.string.version), "1.0.0")
+                InfoRow(stringResource(R.string.tech_stack), stringResource(R.string.tech_stack_value))
+                InfoRow(stringResource(R.string.data_storage), stringResource(R.string.data_storage_value))
             }
         }
 
@@ -135,7 +134,7 @@ fun SettingsScreen(
 private fun PermissionStatusIcon(enabled: Boolean) {
     Icon(
         imageVector = if (enabled) Icons.Default.CheckCircle else Icons.Default.Warning,
-        contentDescription = if (enabled) "已开启" else "未开启",
+        contentDescription = if (enabled) stringResource(R.string.enabled) else stringResource(R.string.notification_permission),
         tint = if (enabled) Color.Green else Color.Gray,
         modifier = Modifier.size(20.dp)
     )

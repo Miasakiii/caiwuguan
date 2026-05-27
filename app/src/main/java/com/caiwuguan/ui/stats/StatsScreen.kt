@@ -34,10 +34,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.caiwuguan.R
 import com.caiwuguan.ui.common.AmountText
 import com.caiwuguan.domain.model.BillType
 import com.caiwuguan.domain.model.Category
@@ -88,7 +90,7 @@ fun StatsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { viewModel.previousMonth() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "上个月")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.previous_month))
                 }
                 Text(
                     "${year}年${month}月",
@@ -96,7 +98,7 @@ fun StatsScreen(
                     fontWeight = FontWeight.Bold
                 )
                 IconButton(onClick = { viewModel.nextMonth() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "下个月")
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = stringResource(R.string.next_month))
                 }
             }
         }
@@ -110,17 +112,17 @@ fun StatsScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("支出", style = MaterialTheme.typography.labelMedium)
+                            Text(stringResource(R.string.expense), style = MaterialTheme.typography.labelMedium)
                             AmountText(totalExpense, BillType.EXPENSE)
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("收入", style = MaterialTheme.typography.labelMedium)
+                            Text(stringResource(R.string.income), style = MaterialTheme.typography.labelMedium)
                             AmountText(totalIncome, BillType.INCOME)
                         }
                     }
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                        Text("结余: ", style = MaterialTheme.typography.bodyMedium)
+                        Text("${stringResource(R.string.balance)}: ", style = MaterialTheme.typography.bodyMedium)
                         AmountText(totalIncome - totalExpense, if (totalIncome >= totalExpense) BillType.INCOME else BillType.EXPENSE)
                     }
                 }
@@ -132,7 +134,7 @@ fun StatsScreen(
             item {
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("分类分布", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.category_distribution), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                         Spacer(Modifier.height(8.dp))
 
                         // 饼图
@@ -200,7 +202,7 @@ fun StatsScreen(
             item {
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.fillMaxSize().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("暂无支出数据", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.no_expense_data), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
@@ -211,7 +213,7 @@ fun StatsScreen(
             item {
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("每日趋势", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.daily_trend), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                         Spacer(Modifier.height(8.dp))
                         Canvas(modifier = Modifier.fillMaxWidth().height(180.dp)) {
                             drawDailyTrend(dailyTrend)

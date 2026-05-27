@@ -15,6 +15,7 @@ import com.caiwuguan.data.db.entity.BudgetEntity
 import com.caiwuguan.data.db.entity.LedgerEntity
 import com.caiwuguan.data.db.entity.MerchantCategoryEntity
 import com.caiwuguan.data.db.entity.MonthlyStatsEntity
+import com.caiwuguan.data.db.migration.MIGRATION_2_3
 
 @Database(
     entities = [
@@ -24,7 +25,7 @@ import com.caiwuguan.data.db.entity.MonthlyStatsEntity
         MerchantCategoryEntity::class,
         MonthlyStatsEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -47,6 +48,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "caiwuguan_database"
                 )
+                    .addMigrations(MIGRATION_2_3)
                     .fallbackToDestructiveMigration(false)
                     .build()
                 INSTANCE = instance

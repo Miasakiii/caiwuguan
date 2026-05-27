@@ -16,11 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.caiwuguan.R
 import com.caiwuguan.ui.navigation.AppNavigation
 import com.caiwuguan.ui.navigation.NavRoutes
 
@@ -37,10 +39,10 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
     val currentDestination = navBackStackEntry?.destination
 
     val bottomNavItems = listOf(
-        BottomNavItem("首页", Icons.Default.Home, NavRoutes.HOME),
-        BottomNavItem("账单", Icons.AutoMirrored.Filled.List, NavRoutes.BILL_LIST),
-        BottomNavItem("统计", Icons.Default.BarChart, NavRoutes.STATS),
-        BottomNavItem("设置", Icons.Default.Settings, NavRoutes.SETTINGS)
+        BottomNavItem(stringResource(R.string.nav_home), Icons.Default.Home, NavRoutes.HOME),
+        BottomNavItem(stringResource(R.string.nav_bills), Icons.AutoMirrored.Filled.List, NavRoutes.BILL_LIST),
+        BottomNavItem(stringResource(R.string.nav_stats), Icons.Default.BarChart, NavRoutes.STATS),
+        BottomNavItem(stringResource(R.string.nav_settings), Icons.Default.Settings, NavRoutes.SETTINGS)
     )
 
     val showBottomBar = currentDestination?.route in bottomNavItems.map { it.route }
@@ -72,7 +74,7 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
                 FloatingActionButton(onClick = {
                     navController.navigate(NavRoutes.ADD_BILL)
                 }) {
-                    Icon(Icons.Default.Add, contentDescription = "记账")
+                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.fab_add_bill))
                 }
             }
         }
