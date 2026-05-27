@@ -8,6 +8,7 @@ import android.os.IBinder
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
+import com.caiwuguan.BuildConfig
 import com.caiwuguan.data.parser.ParseResult
 import com.caiwuguan.data.parser.ParserRegistry
 import com.caiwuguan.domain.repository.BillRepository
@@ -16,6 +17,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -30,7 +33,7 @@ class NotificationListenerServiceImpl : NotificationListenerService() {
     @Inject lateinit var billRepository: BillRepository
     @Inject lateinit var addBillUseCase: AddBillUseCase
 
-    private val serviceScope = CoroutineScope(Dispatchers.IO)
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var isInitialized = false
 
     override fun onCreate() {
@@ -38,8 +41,15 @@ class NotificationListenerServiceImpl : NotificationListenerService() {
         if (!isInitialized) {
             isInitialized = true
             createNotificationChannel()
-            Log.d(TAG, "Service initialized with Hilt injection")
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Service initialized with Hilt injection")
+            }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceScope.cancel()
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
@@ -48,17 +58,21 @@ class NotificationListenerServiceImpl : NotificationListenerService() {
             val packageName = sbn.packageName
             val text = extractNotificationText(notification) ?: return
 
-            Log.d(TAG, "Notification from $packageName: $text")
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Notification from $packageName: $text")
+            }
 
             val result = parserRegistry.parse(text, packageName)
 
             if (result is ParseResult.Success) {
-                Log.d(TAG, "Parsed as ${result.type} - ${result.amount} - ${result.merchant}")
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "Parsed as ${result.type} - ${result.amount} - ${result.merchant}")
+                }
 
                 serviceScope.launch {
                     addBillUseCase.executeFromParse(result, text, packageName)
                 }
-            } else {
+            } else if (BuildConfig.DEBUG) {
                 Log.d(TAG, "Parse result: $result")
             }
 

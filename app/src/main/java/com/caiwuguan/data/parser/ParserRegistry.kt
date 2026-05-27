@@ -7,8 +7,7 @@ import javax.inject.Singleton
 class ParserRegistry @Inject constructor(
     private val wechatParser: WechatParser,
     private val alipayParser: AlipayParser,
-    private val bankAppParser: BankAppParser,
-    private val categoryClassifier: CategoryClassifier
+    private val bankAppParser: BankAppParser
 ) {
     private val parsers: List<NotificationParser> = listOf(wechatParser, alipayParser, bankAppParser)
 

@@ -1,7 +1,6 @@
 package com.caiwuguan.data.permission
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -19,8 +18,6 @@ import javax.inject.Singleton
 class PermissionManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-
-    private val activity = context as? Activity
 
     /**
      * 通知监听权限是否已开启
@@ -57,12 +54,16 @@ class PermissionManager @Inject constructor(
      * 打开通知监听权限设置页面
      */
     fun openNotificationListenerSettings() {
-        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
         } else {
             // 尝试打开无障碍设置
-            val intent2 = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            val intent2 = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
             context.startActivity(intent2)
         }
     }
@@ -102,11 +103,9 @@ class PermissionManager @Inject constructor(
      */
     fun requestNotificationPermission(onResult: (Boolean) -> Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            activity?.let { act ->
-                // 这里应该使用 ActivityResultContracts.RequestPermission()
-                // 但由于是纯 Kotlin 类，直接返回结果
-                onResult(hasNotificationPermission())
-            }
+            // 需要在 Activity 中使用 ActivityResultContracts.RequestPermission()
+            // 当前直接返回当前状态
+            onResult(hasNotificationPermission())
         } else {
             onResult(true)
         }
@@ -141,9 +140,10 @@ class PermissionManager @Inject constructor(
     fun requestIgnoreBatteryOptimization(onResult: (Boolean) -> Unit) {
         val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
             data = android.net.Uri.parse("package:$context.packageName")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         if (intent.resolveActivity(context.packageManager) != null) {
-            activity?.startActivity(intent)
+            context.startActivity(intent)
         }
         onResult(isIgnoringBatteryOptimizations())
     }

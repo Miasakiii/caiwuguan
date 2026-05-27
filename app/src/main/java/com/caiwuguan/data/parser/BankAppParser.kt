@@ -13,7 +13,7 @@ class BankAppParser @Inject constructor() : NotificationParser {
     private val bankPackages = mapOf(
         "com.icbc" to PaymentSource.BANK_ICBC,
         "com.chinamworld.main" to PaymentSource.BANK_CCB,
-        "com.example.bankabc" to PaymentSource.BANK_ABC,
+        "com.android.bankabc" to PaymentSource.BANK_ABC,
         "com.boc" to PaymentSource.BANK_BOC,
         "com.bankcomm" to PaymentSource.BANK_COMM,
         "cmb.pb" to PaymentSource.BANK_CMB

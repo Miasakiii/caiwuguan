@@ -1,5 +1,6 @@
 package com.caiwuguan.ai
 
+import com.caiwuguan.data.parser.CategoryClassifier
 import com.caiwuguan.domain.model.Bill
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -9,14 +10,16 @@ import javax.inject.Singleton
  * 后续可接入大模型 API 实现智能分析
  */
 @Singleton
-class AiHelper @Inject constructor() {
+class AiHelper @Inject constructor(
+    private val categoryClassifier: CategoryClassifier
+) {
 
     /**
      * 根据账单历史生成个性化分类建议
      */
     fun suggestCategory(merchant: String, history: List<Bill>): com.caiwuguan.domain.model.Category {
         // 当前使用规则匹配，后续可接入 AI
-        return com.caiwuguan.data.parser.CategoryClassifier().classify(merchant).first
+        return categoryClassifier.classify(merchant).first
     }
 
     /**

@@ -4,22 +4,31 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -34,6 +43,8 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val isNotificationListenerEnabled by viewModel.isNotificationListenerEnabled.collectAsState()
+    val hasNotificationPermission by viewModel.hasNotificationPermission.collectAsState()
 
     Column(
         modifier = Modifier
@@ -50,7 +61,11 @@ fun SettingsScreen(
         // 权限设置
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("通知监听权限", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("通知监听权限", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.weight(1f))
+                    PermissionStatusIcon(isNotificationListenerEnabled)
+                }
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "财务官需要通知监听权限来读取微信和支付宝的支付通知，实现自动记账。",
@@ -59,9 +74,9 @@ fun SettingsScreen(
                 )
                 Spacer(Modifier.height(8.dp))
                 TextButton(onClick = {
-                    context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                    viewModel.openNotificationListenerSettings()
                 }) {
-                    Text("前往设置")
+                    Text(if (isNotificationListenerEnabled) "已开启" else "前往设置")
                 }
             }
         }
@@ -78,7 +93,7 @@ fun SettingsScreen(
                 )
                 Spacer(Modifier.height(8.dp))
                 TextButton(onClick = {
-                    context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+                    viewModel.requestIgnoreBatteryOptimization {}
                 }) {
                     Text("前往设置")
                 }
@@ -114,6 +129,16 @@ fun SettingsScreen(
 
         Spacer(Modifier.height(16.dp))
     }
+}
+
+@Composable
+private fun PermissionStatusIcon(enabled: Boolean) {
+    Icon(
+        imageVector = if (enabled) Icons.Default.CheckCircle else Icons.Default.Warning,
+        contentDescription = if (enabled) "已开启" else "未开启",
+        tint = if (enabled) Color.Green else Color.Gray,
+        modifier = Modifier.size(20.dp)
+    )
 }
 
 @Composable
