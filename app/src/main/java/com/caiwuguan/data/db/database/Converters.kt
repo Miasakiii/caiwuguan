@@ -9,7 +9,9 @@ import com.google.gson.reflect.TypeToken
 
 class Converters {
 
-    private val gson = Gson()
+    companion object {
+        private val gson = Gson()
+    }
 
     @TypeConverter
     fun fromCategory(value: Category): String = value.name

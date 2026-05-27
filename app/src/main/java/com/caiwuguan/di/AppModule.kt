@@ -34,18 +34,23 @@ object AppModule {
         AppDatabase.getDatabase(context)
 
     @Provides
+    @Singleton
     fun provideBillDao(db: AppDatabase): BillDao = db.billDao()
 
     @Provides
+    @Singleton
     fun provideBudgetDao(db: AppDatabase): BudgetDao = db.budgetDao()
 
     @Provides
+    @Singleton
     fun provideLedgerDao(db: AppDatabase): LedgerDao = db.ledgerDao()
 
     @Provides
+    @Singleton
     fun provideMerchantCategoryDao(db: AppDatabase): MerchantCategoryDao = db.merchantCategoryDao()
 
     @Provides
+    @Singleton
     fun provideMonthlyStatsDao(db: AppDatabase): MonthlyStatsDao = db.monthlyStatsDao()
 
     @Provides

@@ -10,7 +10,8 @@ import androidx.room.PrimaryKey
         Index(value = ["timestamp"]),
         Index(value = ["category"]),
         Index(value = ["source"]),
-        Index(value = ["source", "timestamp"])
+        Index(value = ["source", "timestamp"]),
+        Index(value = ["source", "transactionId"])
     ]
 )
 data class BillEntity(

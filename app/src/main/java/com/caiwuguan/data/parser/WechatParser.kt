@@ -3,7 +3,7 @@ package com.caiwuguan.data.parser
 import com.caiwuguan.domain.model.BillType
 import com.caiwuguan.domain.model.Category
 import com.caiwuguan.domain.model.PaymentSource
-import java.math.BigDecimal
+import com.caiwuguan.util.AmountExtractor
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,7 +16,7 @@ class WechatParser @Inject constructor() : NotificationParser {
     override fun parse(text: String, packageName: String): ParseResult {
         if (shouldIgnore(text)) return ParseResult.Ignore
 
-        val amount = extractAmount(text) ?: return ParseResult.Failure("无法提取金额")
+        val amount = AmountExtractor.extractAmount(text) ?: return ParseResult.Failure("无法提取金额")
 
         return when {
             text.contains("退款") -> ParseResult.Success(
@@ -33,7 +33,7 @@ class WechatParser @Inject constructor() : NotificationParser {
             )
 
             text.contains("转账") -> {
-                val merchant = extractAfterGive(text)
+                val merchant = AmountExtractor.extractAfterGive(text)
                 ParseResult.Success(
                     amount, BillType.EXPENSE, merchant = merchant ?: "",
                     category = Category.TRANSFER, source = PaymentSource.WECHAT
@@ -41,9 +41,7 @@ class WechatParser @Inject constructor() : NotificationParser {
             }
 
             text.contains("付款") -> {
-                val merchant = extractQuoteContent(text)
-                    ?: extractAfterGive(text)
-                    ?: ""
+                val merchant = AmountExtractor.extractMerchant(text) ?: ""
                 ParseResult.Success(
                     amount, BillType.EXPENSE, merchant = merchant,
                     source = PaymentSource.WECHAT
@@ -60,21 +58,4 @@ class WechatParser @Inject constructor() : NotificationParser {
 
     private fun shouldIgnore(text: String): Boolean =
         text.contains("零钱提现") || text.contains("零钱通") || text.contains("理财通")
-
-    private fun extractAmount(text: String): Long? {
-        val regex = Regex("""[￥¥]\s*([0-9,]+\.\d{2})""")
-        val match = regex.find(text) ?: return null
-        val amountStr = match.groupValues[1].replace(",", "")
-        return BigDecimal(amountStr).multiply(BigDecimal(100)).toLong()
-    }
-
-    private fun extractQuoteContent(text: String): String? {
-        val regex = Regex("""「(.+?)」""")
-        return regex.find(text)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotEmpty() }
-    }
-
-    private fun extractAfterGive(text: String): String? {
-        val regex = Regex("""给\s*(.+)$""")
-        return regex.find(text)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotEmpty() }
-    }
 }

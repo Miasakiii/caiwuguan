@@ -3,7 +3,7 @@ package com.caiwuguan.data.parser
 import com.caiwuguan.domain.model.BillType
 import com.caiwuguan.domain.model.Category
 import com.caiwuguan.domain.model.PaymentSource
-import java.math.BigDecimal
+import com.caiwuguan.util.AmountExtractor
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,7 +26,7 @@ class BankAppParser @Inject constructor() : NotificationParser {
         val source = bankPackages.entries.firstOrNull { packageName.startsWith(it.key) }
             ?.value ?: return ParseResult.Ignore
 
-        val amount = extractAmount(text) ?: return ParseResult.Failure("无法提取金额")
+        val amount = AmountExtractor.extractAmount(text) ?: return ParseResult.Failure("无法提取金额")
 
         return when {
             text.contains("工资") || text.contains("入账") && !text.contains("消费") -> ParseResult.Success(
@@ -58,12 +58,5 @@ class BankAppParser @Inject constructor() : NotificationParser {
 
             else -> ParseResult.Failure("无法识别银行通知类型")
         }
-    }
-
-    private fun extractAmount(text: String): Long? {
-        val regex = Regex("""(?:人民币)?[￥¥]?\s*([0-9,]+\.\d{2})\s*(?:元)?""")
-        val match = regex.find(text) ?: return null
-        val amountStr = match.groupValues[1].replace(",", "")
-        return BigDecimal(amountStr).multiply(BigDecimal(100)).toLong()
     }
 }

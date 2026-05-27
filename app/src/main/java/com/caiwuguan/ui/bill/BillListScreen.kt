@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -59,6 +61,29 @@ fun BillListScreen(
     val bills by viewModel.bills.collectAsState()
     val year by viewModel.currentYear.collectAsState()
     val month by viewModel.currentMonth.collectAsState()
+    var billToDelete by remember { mutableStateOf<Bill?>(null) }
+
+    // 删除确认对话框
+    billToDelete?.let { bill ->
+        AlertDialog(
+            onDismissRequest = { billToDelete = null },
+            title = { Text("确认删除") },
+            text = { Text("确定要删除这笔账单吗？") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deleteBill(bill)
+                    billToDelete = null
+                }) {
+                    Text("删除")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { billToDelete = null }) {
+                    Text("取消")
+                }
+            }
+        )
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -113,8 +138,8 @@ fun BillListScreen(
                     val dismissState = rememberSwipeToDismissBoxState(
                         confirmValueChange = { value ->
                             if (value == SwipeToDismissBoxValue.EndToStart) {
-                                viewModel.deleteBill(bill)
-                                true
+                                billToDelete = bill
+                                false // 不直接删除，显示确认对话框
                             } else false
                         }
                     )
