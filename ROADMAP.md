@@ -358,7 +358,7 @@
 
 | # | 问题 | 状态 | 解决方式 |
 |---|------|------|----------|
-| m1 | 零测试覆盖 | ❌ 待修复 | 至少补充 DAO/Parser/Deduplicator 单测 |
+| m1 | 零测试覆盖 | ✅ 已修复 | 添加 45 个单元测试（Parser/Classifier/AmountExtractor） |
 | m2 | destructive migration | ✅ 已修复 | 添加 Migration(2,3) |
 | m3 | 删除按钮无确认对话框 | ✅ 已修复 | 添加 AlertDialog 确认 |
 | m4 | 硬编码中文字符串 | ✅ 已修复 | 提取 40+ 字符串到 strings.xml |
