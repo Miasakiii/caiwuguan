@@ -1,6 +1,10 @@
 package com.caiwuguan.ai.deepseek
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -23,7 +27,8 @@ data class ChatRequest(
     val model: String = "deepseek-chat",
     val messages: List<ChatMessage>,
     val temperature: Double = 0.7,
-    val max_tokens: Int = 1024
+    val max_tokens: Int = 1024,
+    val stream: Boolean = false
 )
 
 @Serializable
@@ -37,6 +42,26 @@ data class ChatChoice(
 data class ChatResponse(
     val id: String,
     val choices: List<ChatChoice>
+)
+
+// 流式响应模型
+@Serializable
+data class StreamDelta(
+    val role: String? = null,
+    val content: String? = null
+)
+
+@Serializable
+data class StreamChoice(
+    val index: Int,
+    val delta: StreamDelta,
+    val finish_reason: String? = null
+)
+
+@Serializable
+data class ChatStreamChunk(
+    val id: String,
+    val choices: List<StreamChoice>
 )
 
 @Singleton
@@ -93,5 +118,78 @@ class DeepSeekClient @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    /**
+     * 流式对话，逐 token 返回内容
+     * 返回 Flow<String>，每个元素是一个 token 片段
+     */
+    fun chatStream(messages: List<ChatMessage>): Flow<String> = callbackFlow {
+        val job = launch(Dispatchers.IO) {
+            try {
+                val key = apiKeyManager.getApiKey()
+                if (key == null) {
+                    close(Exception("API Key 未设置，请在设置中配置"))
+                    return@launch
+                }
+
+                val request = ChatRequest(messages = messages, stream = true)
+                val requestBody = json.encodeToString(ChatRequest.serializer(), request)
+
+                val httpRequest = Request.Builder()
+                    .url(CHAT_ENDPOINT)
+                    .addHeader("Authorization", "Bearer $key")
+                    .addHeader("Content-Type", "application/json")
+                    .post(requestBody.toRequestBody("application/json".toMediaType()))
+                    .build()
+
+                val response = client.newCall(httpRequest).execute()
+
+                if (!response.isSuccessful) {
+                    val errorBody = response.body?.string() ?: ""
+                    close(Exception("API 请求失败: ${response.code} $errorBody"))
+                    return@launch
+                }
+
+                val source = response.body?.source()
+                if (source == null) {
+                    close(Exception("响应为空"))
+                    return@launch
+                }
+
+                try {
+                    while (!source.exhausted()) {
+                        val line = source.readUtf8Line() ?: break
+
+                        if (line.startsWith("data: ")) {
+                            val data = line.removePrefix("data: ").trim()
+
+                            if (data == "[DONE]") {
+                                break
+                            }
+
+                            try {
+                                val chunk = json.decodeFromString(ChatStreamChunk.serializer(), data)
+                                val content = chunk.choices.firstOrNull()?.delta?.content
+                                if (content != null) {
+                                    trySend(content)
+                                }
+                            } catch (_: Exception) {
+                                // 忽略解析错误的行
+                            }
+                        }
+                    }
+                } finally {
+                    source.close()
+                    response.close()
+                }
+
+                close()
+            } catch (e: Exception) {
+                close(e)
+            }
+        }
+
+        awaitClose { job.cancel() }
     }
 }

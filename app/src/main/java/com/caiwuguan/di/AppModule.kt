@@ -3,6 +3,7 @@ package com.caiwuguan.di
 import android.content.Context
 import com.caiwuguan.data.db.dao.BillDao
 import com.caiwuguan.data.db.dao.BudgetDao
+import com.caiwuguan.data.db.dao.ChatDao
 import com.caiwuguan.data.db.dao.LedgerDao
 import com.caiwuguan.data.db.dao.MerchantCategoryDao
 import com.caiwuguan.data.db.dao.MonthlyStatsDao
@@ -40,6 +41,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideBudgetDao(db: AppDatabase): BudgetDao = db.budgetDao()
+
+    @Provides
+    @Singleton
+    fun provideChatDao(db: AppDatabase): ChatDao = db.chatDao()
 
     @Provides
     @Singleton

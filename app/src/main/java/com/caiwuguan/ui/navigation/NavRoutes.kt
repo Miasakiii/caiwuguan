@@ -13,6 +13,7 @@ object NavRoutes {
     const val SEARCH = "search"
     const val LEDGER = "ledger"
     const val API_KEY = "api_key"
+    const val AI_CHAT = "ai_chat"
 
     fun editBill(billId: Long) = "edit_bill/$billId"
 }

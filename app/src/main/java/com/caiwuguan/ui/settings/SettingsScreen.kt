@@ -218,6 +218,25 @@ fun SettingsScreen(
             }
         }
 
+        // AI 助手
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("AI 助手", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "与 AI 助手对话，分析消费情况、获取理财建议",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(8.dp))
+                TextButton(onClick = {
+                    navController.navigate(NavRoutes.AI_CHAT)
+                }) {
+                    Text("打开 AI 助手")
+                }
+            }
+        }
+
         // 前台服务
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {

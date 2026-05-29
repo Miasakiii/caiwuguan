@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.caiwuguan.ui.ai.AiChatScreen
 import com.caiwuguan.ui.bill.AddBillScreen
 import com.caiwuguan.ui.bill.BillEditScreen
 import com.caiwuguan.ui.bill.BillListScreen
@@ -63,6 +64,11 @@ fun AppNavigation(navController: NavHostController, bottomPadding: Dp = 0.dp) {
         }
         composable(NavRoutes.API_KEY) {
             ApiKeyScreen(navController)
+        }
+        composable(NavRoutes.AI_CHAT) {
+            AiChatScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
     }
 }
